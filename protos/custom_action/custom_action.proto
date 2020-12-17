@@ -1,0 +1,140 @@
+syntax = "proto3";
+
+package mavsdk.rpc.custom_action;
+
+option java_package = "io.mavsdk.custom_action";
+option java_outer_classname = "CustomActionProto";
+
+// Allows to send a receive and process custom actions, which
+// description and parameters are defined by a metadata XML file
+service CustomActionService {
+    /*
+     * Send custom action command to the system.
+     */
+    rpc SetCustomAction(SetCustomActionRequest) returns(SetCustomActionResponse) {}
+
+    /*
+     * Receive and process custom action command.
+     */
+    rpc SubscribeCustomAction(SubscribeCustomActionRequest) returns(stream SubscribeCustomActionResponse) {}
+
+    /*
+     * Receive and process custom action command cancellation.
+     */
+    rpc SubscribeCustomActionCancellation(SubscribeCustomActionCancellationRequest) returns(stream SubscribeCustomActionCancellationResponse) {}
+
+    /*
+     * Respond to the custom action command with progress.
+     */
+    rpc RespondCustomAction(RespondCustomActionRequest) returns(CustomActionResponse) {}
+
+    /*
+     * Request custom action metadata.
+     */
+    rpc CustomActionMetadata(CustomActionMetadataRequest) returns(CustomActionMetadataResponse) {}
+
+    /*
+     * Execute custom action stage.
+     */
+    rpc ExecuteCustomActionStage(ExecuteCustomActionStageRequest) returns(ExecuteCustomActionStageResponse) {}
+}
+
+message SetCustomActionRequest {
+    ActionToExecute action = 1;
+}
+message SetCustomActionResponse {
+    CustomActionResult custom_action_result = 1;
+}
+
+message SubscribeCustomActionRequest {}
+message SubscribeCustomActionResponse {
+    ActionToExecute action = 1;
+}
+
+message SubscribeCustomActionCancellationRequest {}
+message SubscribeCustomActionCancellationResponse {
+    bool cancel = 1;
+}
+
+message RespondCustomActionRequest {
+    ActionToExecute action = 1;
+    CustomActionResult result = 2;
+}
+message CustomActionResponse {
+    CustomActionResult result = 1;
+}
+
+message CustomActionMetadataRequest {
+    ActionToExecute action = 1; // The action to load the metadata about
+    string file_path = 2; // The metadata JSON file absolute path
+}
+message CustomActionMetadataResponse {
+    ActionMetadata action_config = 1;
+    CustomActionResult result = 2;
+}
+
+message ExecuteCustomActionStageRequest {
+    Stage stage = 1; // The custom action stage to execute
+}
+message ExecuteCustomActionStageResponse {
+    CustomActionResult result = 1; // The result of execution of the stage
+}
+
+message ActionToExecute {
+    uint32 id = 1; // ID of the action
+    double timeout = 2; // Action timeout / max execution time
+    double progress = 3; // Action progress
+}
+
+message Command {
+    // Command type enumeration
+    enum Type {
+        TYPE_LONG = 0; // Command long
+        TYPE_INT  = 1; // Command int
+    }
+
+    Type type = 1; // Type enum value. LONG or INT
+    uint32 target_system_id = 2; // Target system ID
+    uint32 target_component_id = 3; // Target component ID. Should match the MAV_COMP
+    uint32 frame = 4; // The coordinate system of the COMMAND. Used in COMMAND_INT
+    uint32 command = 5; // Command to send to target system and component. Should match the MAV_CMD
+    double param1 = 6; // Command parameter 1
+    double param2 = 7; // Command parameter 2
+    double param3 = 8; // Command parameter 3
+    double param4 = 9; // Command parameter 4
+    double param5 = 10; // Command parameter 5. In COMMAND_INT: local x position or latitude. Casted to int32 before sending the command
+    double param6 = 11; // Command parameter 6. In COMMAND_INT: local y position or longitude. Casted to int32 before sending the command
+    double param7 = 12; // Command parameter 7. In COMMAND_INT: z position: global: altitude in meters (relative or absolute, depending on frame)
+    bool is_local = 13; // In COMMAND_INT: Set to true if x/y are local positions. Otherwise, these are lat/lon
+}
+
+message Stage {
+    Command command = 1; // Command to run in the stage (if applicable)
+    string run_script = 2; // Script to run in that stage (if applicable). Should contain the full path.
+    double timestamp_start = 3; // Timestamp in usec when to start the stage
+    double timestamp_stop = 4; // Timestamp in usec when the stage should stop
+}
+
+message ActionMetadata {
+    uint32 id = 1; // ID of the action
+    string name = 2; // Name of the action
+    string description = 3; // Description of the action
+    string run_general_script = 4; // Script to run for this specific action. Runs instead of the stages.
+    repeated Stage stages = 5; // Timestamped ordered stages. Runs instead of the general script.
+}
+
+// Result type.
+message CustomActionResult {
+    // Possible results returned for action requests.
+    enum Result {
+        RESULT_UNKNOWN = 0; // Unknown result
+        RESULT_SUCCESS = 1; // Command was accepted
+        RESULT_ERROR = 2; // Error occurred sending the command
+        RESULT_TIMEOUT = 3; // Command timed out
+        RESULT_UNSUPPORTED = 4; // Functionality not supported
+        RESULT_IN_PROGRESS = 5; // Command in progress
+    }
+
+    Result result = 1; // Result enum value
+    string result_str = 2; // Human-readable English string describing the result
+}

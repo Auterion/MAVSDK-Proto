@@ -5,8 +5,8 @@ package mavsdk.rpc.custom_action;
 option java_package = "io.mavsdk.custom_action";
 option java_outer_classname = "CustomActionProto";
 
-// Allows to send a receive and process custom actions, which
-// description and parameters are defined by a metadata XML file
+// Allows to send, receive and process custom actions, which description and
+// configuration are defined in a JSON file.
 service CustomActionService {
     /*
      * Send custom action command to the system.
@@ -80,12 +80,17 @@ message ExecuteCustomActionStageResponse {
     CustomActionResult result = 1; // The result of execution of the stage
 }
 
+// Used to identify action to be executed, its timeout / max execution time,
+// and, while being processed, its execution progress, which is used to send
+// MAVLink command ACKs with progress to the autopilot side.
 message ActionToExecute {
     uint32 id = 1; // ID of the action
     double timeout = 2; // Action timeout / max execution time
     double progress = 3; // Action progress
 }
 
+// General definition of a COMMAND_LONG or a COMMAND_INT MAVLink message to be
+// sent and executed during a custom action.
 message Command {
     // Command type enumeration
     enum Type {
@@ -108,6 +113,8 @@ message Command {
     bool is_local = 13; // In COMMAND_INT: Set to true if x/y are local positions. Otherwise, these are lat/lon
 }
 
+// Defines totally or partially a custom action. Can be a Mavlink command or a
+// script.
 message Stage {
     Command command = 1; // Command to run in the stage (if applicable)
     string run_script = 2; // Script to run in that stage (if applicable). Should contain the full path.
@@ -115,6 +122,7 @@ message Stage {
     double timestamp_stop = 4; // Timestamp in usec when the stage should stop
 }
 
+// Metadata that describes the custom action and defines its stages.
 message ActionMetadata {
     uint32 id = 1; // ID of the action
     string name = 2; // Name of the action
@@ -123,7 +131,7 @@ message ActionMetadata {
     repeated Stage stages = 5; // Timestamped ordered stages. Runs instead of the general script.
 }
 
-// Result type.
+// Custom action result type.
 message CustomActionResult {
     // Possible results returned for action requests.
     enum Result {

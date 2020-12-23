@@ -37,6 +37,11 @@ service CustomActionService {
      * Execute custom action stage.
      */
     rpc ExecuteCustomActionStage(ExecuteCustomActionStageRequest) returns(ExecuteCustomActionStageResponse) {}
+
+    /*
+     * Execute custom action global script.
+     */
+    rpc ExecuteCustomActionGlobalScript(ExecuteCustomActionGlobalScriptRequest) returns(ExecuteCustomActionGlobalScriptResponse) {}
 }
 
 message SetCustomActionRequest {
@@ -80,6 +85,13 @@ message ExecuteCustomActionStageResponse {
     CustomActionResult result = 1; // The result of execution of the stage
 }
 
+message ExecuteCustomActionGlobalScriptRequest {
+    string global_script = 1; // The global script to run
+}
+message ExecuteCustomActionGlobalScriptResponse {
+    CustomActionResult result = 1; // The result of execution of the global script
+}
+
 // Used to identify action to be executed, its timeout / max execution time,
 // and, while being processed, its execution progress, which is used to send
 // MAVLink command ACKs with progress to the autopilot side.
@@ -117,7 +129,7 @@ message Command {
 // script.
 message Stage {
     Command command = 1; // Command to run in the stage (if applicable)
-    string run_script = 2; // Script to run in that stage (if applicable). Should contain the full path.
+    string script = 2; // Script to run in that stage (if applicable).
     double timestamp_start = 3; // Timestamp in usec when to start the stage
     double timestamp_stop = 4; // Timestamp in usec when the stage should stop
 }
@@ -127,8 +139,8 @@ message ActionMetadata {
     uint32 id = 1; // ID of the action
     string name = 2; // Name of the action
     string description = 3; // Description of the action
-    string run_general_script = 4; // Script to run for this specific action. Runs instead of the stages.
-    repeated Stage stages = 5; // Timestamped ordered stages. Runs instead of the general script.
+    string global_script = 4; // Script to run for this specific action. Runs instead of the stages.
+    repeated Stage stages = 5; // Timestamped ordered stages. Runs instead of the global script.
 }
 
 // Custom action result type.

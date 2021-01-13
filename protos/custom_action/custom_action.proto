@@ -125,8 +125,17 @@ message Command {
     bool is_local = 13; // In COMMAND_INT: Set to true if x/y are local positions. Otherwise, these are lat/lon
 }
 
-// Defines totally or partially a custom action. Can be a Mavlink command or a
-// script.
+// Defines totally or partially a custom action. Can be a MAVLink command or a
+// script (with full or relative path).
+//
+// The timestamps are relative to the start of the action. This is rather useful
+// if one has a state machine on the Companion/Mission Computer to process this.
+// In the other hand, one does not have to consume these timestamps by just
+// defining the trigger times manually on the state machine.
+//
+// @note it is considered that a timestamp_start of 0 and timestamp_stop > 0,
+// then timestamp_stop is used as a timeout to the stage, forcing the action
+// to the next stage, if available, or to complete.
 message Stage {
     Command command = 1; // Command to run in the stage (if applicable)
     string script = 2; // Script to run in that stage (if applicable).
@@ -140,7 +149,8 @@ message ActionMetadata {
     string name = 2; // Name of the action
     string description = 3; // Description of the action
     string global_script = 4; // Script to run for this specific action. Runs instead of the stages.
-    repeated Stage stages = 5; // Timestamped ordered stages. Runs instead of the global script.
+    double global_timeout = 5; // Timeout for the action. If a global script is set, it is used as a timeout for the script. Otherwise, for a staged action, defines the global timeout for the action. independently of the state of the stage processing.
+    repeated Stage stages = 6; // Timestamped ordered stages. Runs instead of the global script.
 }
 
 // Custom action result type.

@@ -1,0 +1,44 @@
+syntax = "proto3";
+
+package mavsdk.rpc.obstacle_avoidance_server;
+
+option java_package = "io.mavsdk.obstacle_avoidance_server";
+option java_outer_classname = "ObstacleAvoidanceServerProto";
+
+/*
+ * Companion computer/server side API to manage and control obstacle avoidance
+ * services.
+ *
+ * Currently a single obstacle avoidance service instance is supported which
+ * needs to have component ID MAV_COMP_ID_OBSTACLE_AVOIDANCE.
+ *
+ * Note also that application/service specific configurations should live in
+ * the application layer, as they are not defined at the MAVLink level.
+ */
+service ObstacleAvoidanceServerService {
+    /*
+     * Receive and process obstacle avoidance service control commands.
+     */
+    rpc SubscribeControl(SubscribeControlRequest) returns(stream SubscribeControlResponse) {}
+}
+
+message SubscribeControlRequest {}
+message SubscribeControlResponse {
+    ControlType control_type = 1;
+}
+
+// Control type.
+message ControlType {
+    // Possible obstacle avoidance service control commands, according to
+    // MAVLink COMPONENT_CONTROL enum.
+    enum Type {
+        CONTROL_UNKNOWN = 0; // Unknown control command.
+        CONTROL_START = 1; // Start/turn-on obstacle avoidance service.
+        CONTROL_STOP = 2; // Stop/turn-off obstacle avoidance service.
+        CONTROL_RESTART = 3; // Restart/reboot obstacle avoidance service.
+        CONTROL_ENABLE = 4; // Enable obstacle avoidance service. Used to switch the service from an idle state to an active state.
+        CONTROL_DISABLE = 5; // Disable obstacle avoidance service. Used to switch the service from an active state to an idle state.
+    }
+
+    Type control_type = 1; // Control type enum value.
+}

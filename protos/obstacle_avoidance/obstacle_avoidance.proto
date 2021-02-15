@@ -6,96 +6,69 @@ option java_package = "io.mavsdk.obstacle_avoidance";
 option java_outer_classname = "ObstacleAvoidanceProto";
 
 /*
- * Used to manage/control obstacle avoidance services identified as
- * MAV_COMP_ID_OBSTACLE_AVOIDANCE.
+ * Plugin to manage and control obstacle avoidance services from the ground.
  *
- * -> Currently only a single obstacle avoidance service instance is supported! <-
+ * Currently a single obstacle avoidance service instance is supported which
+ * needs to have component ID MAV_COMP_ID_OBSTACLE_AVOIDANCE.
  *
  * Note also that application/service specific configurations should live in
- * the application layer, as they are not defined at the MAVLink level.
+ * the server application layer, as they are not defined at the MAVLink level.
  */
 service ObstacleAvoidanceService {
     /*
-     * Send obstacle avoidance service start command to the system.
+     * Start obstacle avoidance service.
      */
     rpc Start(StartRequest) returns(StartResponse) {}
 
     /*
-     * Send obstacle avoidance service stop command to the system.
+     * Stop obstacle avoidance service.
      */
     rpc Stop(StopRequest) returns(StopResponse) {}
 
     /*
-     * Send obstacle avoidance service restart command to the system.
+     * Restart obstacle avoidance service.
      */
     rpc Restart(RestartRequest) returns(RestartResponse) {}
 
     /*
-     * Send obstacle avoidance service enable command to the system.
+     * Enable obstacle avoidance service (switch from idle to active state).
      */
-    rpc Enable(EnableRequest) returns(EnableResponse) {}
+    rpc StateEnable(StateEnableRequest) returns(StateEnableResponse) {}
 
     /*
-     * Send obstacle avoidance service enable command to the system.
+     * Disable obstacle avoidance service (switch from active to idle state).
      */
-    rpc Disable(DisableRequest) returns(DisableResponse) {}
-
-    /*
-     * Receive and process obstacle avoidance service control commands.
-     */
-    rpc SubscribeControl(SubscribeControlRequest) returns(stream SubscribeControlResponse) {}
+    rpc StateDisable(StateDisableRequest) returns(StateDisableResponse) {}
 }
 
 message StartRequest {}
 message StartResponse {
-    ControlResult control_result = 1;
+    ObstacleAvoidanceResult result = 1;
 }
 
 message StopRequest {}
 message StopResponse {
-    ControlResult control_result = 1;
+    ObstacleAvoidanceResult result = 1;
 }
 
 message RestartRequest {}
 message RestartResponse {
-    ControlResult control_result = 1;
+    ObstacleAvoidanceResult result = 1;
 }
 
-message EnableRequest {}
-message EnableResponse {
-    ControlResult control_result = 1;
+message StateEnableRequest {}
+message StateEnableResponse {
+    ObstacleAvoidanceResult result = 1;
 }
 
-message DisableRequest {}
-message DisableResponse {
-    ControlResult control_result = 1;
-}
-
-message SubscribeControlRequest {}
-message SubscribeControlResponse {
-    ControlType control_type = 1;
-}
-
-// Control type.
-message ControlType {
-    // Possible obstacle avoidance service control commands, according to
-    // MAVLink COMPONENT_CONTROL enum.
-    enum ControlType {
-        CONTROL_UNKNOWN = 0; // Unknown control command.
-        CONTROL_START = 1; // Start/turn-on obstacle avoidance service.
-        CONTROL_STOP = 2; // Stop/turn-off obstacle avoidance service.
-        CONTROL_RESTART = 3; // Restart/reboot obstacle avoidance service.
-        CONTROL_ENABLE = 4; // Enable obstacle avoidance service. Used to switch the service from an idle state to an active state.
-        CONTROL_DISABLE = 5; // Disable obstacle avoidance service. Used to switch the service from an active state to an idle state.
-    }
-
-    ControlType control_type = 1; // Control type enum value.
-    string control_type_str = 2; // Human-readable English string describing the control type.
+message StateDisableRequest {}
+message StateDisableResponse {
+    ObstacleAvoidanceResult result = 1;
 }
 
 // Result type.
-message ControlResult {
-    // Possible results returned for control requests.
+message ObstacleAvoidanceResult {
+    // Possible results returned for obstacle avoidance control requests.
     enum Result {
         RESULT_UNKNOWN = 0; // Unknown result
         RESULT_SUCCESS = 1; // Request was successful
@@ -107,5 +80,4 @@ message ControlResult {
     }
 
     Result result = 1; // Result enum value.
-    string result_str = 2; // Human-readable English string describing the result.
 }

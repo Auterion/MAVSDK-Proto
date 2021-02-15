@@ -1,0 +1,84 @@
+syntax = "proto3";
+
+package mavsdk.rpc.obstacle_avoidance;
+
+option java_package = "io.mavsdk.obstacle_avoidance";
+option java_outer_classname = "ObstacleAvoidanceProto";
+
+/*
+ * Used to manage/control obstacle avoidance services
+ * identified as MAV_COMP_ID_OBSTACLE_AVOIDANCE.
+ *
+ * -> Currently only a single obstacle avoidance service instance is supported! <-
+ *
+ * Note also that application/service specific configurations should live in
+ * the application layer, as they are not defined at the MAVLink level.
+ */
+service ObstacleAvoidanceService {
+    /*
+     * Send obstacle avoidance service start command to the system.
+     */
+    rpc Start(StartRequest) returns(StartResponse) {}
+
+    /*
+     * Send obstacle avoidance service stop command to the system.
+     */
+    rpc Stop(StopRequest) returns(StopResponse) {}
+
+    /*
+     * Send obstacle avoidance service restart command to the system.
+     */
+    rpc Restart(RestartRequest) returns(RestartResponse) {}
+
+    /*
+     * Send obstacle avoidance service enable command to the system.
+     */
+    rpc Enable(EnableRequest) returns(EnableResponse) {}
+
+    /*
+     * Send obstacle avoidance service enable command to the system.
+     */
+    rpc Disable(DisableRequest) returns(DisableResponse) {}
+}
+
+message StartRequest {}
+message StartResponse {
+    ControlResult control_result = 1;
+}
+
+message StopRequest {}
+message StopResponse {
+    ControlResult control_result = 1;
+}
+
+message RestartRequest {}
+message RestartResponse {
+    ControlResult control_result = 1;
+}
+
+message EnableRequest {}
+message EnableResponse {
+    ControlResult control_result = 1;
+}
+
+message DisableRequest {}
+message DisableResponse {
+    ControlResult control_result = 1;
+}
+
+// Result type.
+message ControlResult {
+    // Possible results returned for control requests.
+    enum Result {
+        RESULT_UNKNOWN = 0; // Unknown result
+        RESULT_SUCCESS = 1; // Request was successful
+        RESULT_NO_SYSTEM = 2; // No system is connected
+        RESULT_CONNECTION_ERROR = 3; // Connection error
+        RESULT_BUSY = 4; // System is busy
+        RESULT_COMMAND_DENIED = 5; // Command refused by system
+        RESULT_TIMEOUT = 8; // Request timed out
+    }
+
+    Result result = 1; // Result enum value.
+    string result_str = 2; // Human-readable English string describing the result.
+}

@@ -43,27 +43,27 @@ service ObstacleAvoidanceService {
 
 message StartRequest {}
 message StartResponse {
-    ObstacleAvoidanceResult result = 1;
+    ObstacleAvoidanceResult obstacle_avoidance_result = 1;
 }
 
 message StopRequest {}
 message StopResponse {
-    ObstacleAvoidanceResult result = 1;
+    ObstacleAvoidanceResult obstacle_avoidance_result = 1;
 }
 
 message RestartRequest {}
 message RestartResponse {
-    ObstacleAvoidanceResult result = 1;
+    ObstacleAvoidanceResult obstacle_avoidance_result = 1;
 }
 
 message StateEnableRequest {}
 message StateEnableResponse {
-    ObstacleAvoidanceResult result = 1;
+    ObstacleAvoidanceResult obstacle_avoidance_result = 1;
 }
 
 message StateDisableRequest {}
 message StateDisableResponse {
-    ObstacleAvoidanceResult result = 1;
+    ObstacleAvoidanceResult obstacle_avoidance_result = 1;
 }
 
 // Result type.
@@ -80,4 +80,5 @@ message ObstacleAvoidanceResult {
     }
 
     Result result = 1; // Result enum value.
+    string result_str = 2; // Human-readable English string describing the result
 }

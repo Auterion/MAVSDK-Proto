@@ -19,11 +19,11 @@ service ObstacleAvoidanceServerService {
     /*
      * Receive and process obstacle avoidance service control commands.
      */
-    rpc SubscribeControl(SubscribeControlRequest) returns(stream SubscribeControlResponse) {}
+    rpc SubscribeControl(SubscribeControlRequest) returns(stream ControlResponse) {}
 }
 
 message SubscribeControlRequest {}
-message SubscribeControlResponse {
+message ControlResponse {
     ControlType control_type = 1;
 }
 
@@ -32,12 +32,12 @@ message ControlType {
     // Possible obstacle avoidance service control commands, according to
     // MAVLink COMPONENT_CONTROL enum.
     enum Type {
-        CONTROL_UNKNOWN = 0; // Unknown control command.
-        CONTROL_START = 1; // Start/turn-on obstacle avoidance service.
-        CONTROL_STOP = 2; // Stop/turn-off obstacle avoidance service.
-        CONTROL_RESTART = 3; // Restart/reboot obstacle avoidance service.
-        CONTROL_ENABLE = 4; // Enable obstacle avoidance service. Used to switch the service from an idle state to an active state.
-        CONTROL_DISABLE = 5; // Disable obstacle avoidance service. Used to switch the service from an active state to an idle state.
+        TYPE_UNKNOWN = 0; // Unknown control command.
+        TYPE_START = 1; // Start/turn-on obstacle avoidance service.
+        TYPE_STOP = 2; // Stop/turn-off obstacle avoidance service.
+        TYPE_RESTART = 3; // Restart/reboot obstacle avoidance service.
+        TYPE_ENABLE = 4; // Enable obstacle avoidance service. Used to switch the service from an idle state to an active state.
+        TYPE_DISABLE = 5; // Disable obstacle avoidance service. Used to switch the service from an active state to an idle state.
     }
 
     Type control_type = 1; // Control type enum value.

@@ -45,7 +45,7 @@ service CustomActionService {
 }
 
 message SetCustomActionRequest {
-    ActionToExecute action = 1;
+    ActionToExecute action_to_execute = 1;
 }
 message SetCustomActionResponse {
     CustomActionResult custom_action_result = 1;
@@ -53,15 +53,15 @@ message SetCustomActionResponse {
 
 message SubscribeCustomActionRequest {}
 message CustomActionResponse {
-    ActionToExecute action = 1;
+    ActionToExecute action_to_execute = 1;
 }
 
 message RespondCustomActionRequest {
-    ActionToExecute action = 1;
+    ActionToExecute action_to_execute = 1;
     CustomActionResult custom_action_result = 2;
 }
 message RespondCustomActionResponse {
-    ActionToExecute action = 1;
+    ActionToExecute action_to_execute = 1;
 }
 
 message SubscribeCustomActionCancellationRequest {}
@@ -70,11 +70,11 @@ message CustomActionCancellationResponse {
 }
 
 message CustomActionMetadataRequest {
-    ActionToExecute action = 1; // The action to load the metadata about
+    ActionToExecute action_to_execute = 1; // The action to load the metadata about
     string file_path = 2; // The metadata JSON file absolute path
 }
 message CustomActionMetadataResponse {
-    ActionMetadata action_config = 1;
+    ActionMetadata action_metadata = 1;
     CustomActionResult custom_action_result = 2;
 }
 
@@ -105,12 +105,12 @@ message ActionToExecute {
 // sent and executed during a custom action.
 message Command {
     // Command type enumeration
-    enum Type {
-        TYPE_LONG = 0; // Command long
-        TYPE_INT  = 1; // Command int
+    enum CommandType {
+        COMMAND_TYPE_LONG = 0; // Command long
+        COMMAND_TYPE_INT  = 1; // Command int
     }
 
-    Type type = 1; // Type enum value. LONG or INT
+    CommandType type = 1; // Type enum value. LONG or INT
     uint32 target_system_id = 2; // Target system ID
     uint32 target_component_id = 3; // Target component ID. Should match the MAV_COMP
     uint32 frame = 4; // The coordinate system of the COMMAND. Used in COMMAND_INT
@@ -146,8 +146,8 @@ message Stage {
 // Metadata that describes the custom action and defines its stages.
 message ActionMetadata {
     uint32 id = 1; // ID of the action
-    string name = 2; // Name of the action
-    string description = 3; // Description of the action
+    string action_name = 2; // Name of the action
+    string action_description = 3; // Description of the action
     string global_script = 4; // Script to run for this specific action. Runs instead of the stages.
     double global_timeout = 5; // Timeout for the action. If a global script is set, it is used as a timeout for the script. Otherwise, for a staged action, defines the global timeout for the action. independently of the state of the stage processing.
     repeated Stage stages = 6; // Timestamped ordered stages. Runs instead of the global script.

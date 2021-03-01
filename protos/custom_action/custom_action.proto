@@ -61,7 +61,7 @@ message RespondCustomActionRequest {
     CustomActionResult custom_action_result = 2;
 }
 message RespondCustomActionResponse {
-    ActionToExecute action_to_execute = 1;
+    CustomActionResult custom_action_result = 1;
 }
 
 message SubscribeCustomActionCancellationRequest {}

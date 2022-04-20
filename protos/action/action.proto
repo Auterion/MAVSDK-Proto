@@ -142,6 +142,13 @@ service ActionService {
      * Set the return to launch minimum return altitude (in meters).
      */
     rpc SetReturnToLaunchAltitude(SetReturnToLaunchAltitudeRequest) returns(SetReturnToLaunchAltitudeResponse) {}
+    /*
+     * Set current speed.
+     *
+     * This will set the speed during a mission, reposition, and similar.
+     * It is ephemeral, so not stored on the drone and does not survive a reboot.
+     */
+     rpc SetCurrentSpeed(SetCurrentSpeedRequest) returns(SetCurrentSpeedResponse) {}
 }
 
 message ArmRequest {}
@@ -282,6 +289,13 @@ message SetReturnToLaunchAltitudeResponse {
     ActionResult action_result = 1;
 }
 
+message SetCurrentSpeedRequest {
+    float speed_m_s = 1; // Speed in meters/second
+}
+message SetCurrentSpeedResponse {
+    ActionResult action_result = 1;
+}
+
 // Result type.
 message ActionResult {
     // Possible results returned for action requests.
@@ -298,6 +312,7 @@ message ActionResult {
         RESULT_VTOL_TRANSITION_SUPPORT_UNKNOWN = 9; // Hybrid/VTOL transition support is unknown
         RESULT_NO_VTOL_TRANSITION_SUPPORT = 10; // Vehicle does not support hybrid/VTOL transitions
         RESULT_PARAMETER_ERROR = 11; // Error getting or setting parameter
+        RESULT_UNSUPPORTED = 12; // Action not supported
     }
 
     Result result = 1; // Result enum value
